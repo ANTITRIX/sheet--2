@@ -3,50 +3,59 @@
 #include <fstream>
 #include <vector>
 using namespace std;
-class LabelGenerator{
+class LabelGenerator {
 protected:
     string label;
-    int count;
+    int count = 0;
 public:
     LabelGenerator(string l, int c);
-    LabelGenerator(){}
-    string nextLabel() ;
+    LabelGenerator() {}
+    string nextLabel();
 };
-LabelGenerator::LabelGenerator(string l, int c){
+LabelGenerator::LabelGenerator(string l, int c) {
     label = l;
     count = c;
 }
-string LabelGenerator::nextLabel(){
-    string NL = label + to_string(count);
+string LabelGenerator::nextLabel() {
+    string temp = label + to_string(count);
     count++;
-    return NL;
+    return temp;
 }
 
-class FileLabelGenerator:public LabelGenerator{
-private:
+class FileLabelGenerator :public LabelGenerator {
+protected:
     string FileName;
+    int j = 0;
 public:
     FileLabelGenerator(string l, int c, string name);
     string  nextLabel();
 };
 FileLabelGenerator::FileLabelGenerator(string l, int c, string name) {
-    label= l;
-    count=c;
-    FileName=name;
+    label = l;
+    count = c;
+    FileName = name;
 }
-string FileLabelGenerator::nextLabel(){
-    ifstream mainFile;
-    string line;
-    mainFile.open(FileName);
-    getline(mainFile, line);
-    line = label + to_string(count)+ ' '+ line;
+string FileLabelGenerator::nextLabel() {
+    ifstream myfile;
+    string l;
+    vector<string> lines;
+    myfile.open(FileName);
+    while (myfile) {
+        string temp;
+        getline(myfile, temp);
+        lines.push_back(temp);
+    }
+    myfile.close();
+    l = label + ' ' + to_string(count) + ' ' + lines[j];
+    j++;
     count++;
-    return line;
+
+    return l;
 
 }
 
 int main() {
-//    LabelGenerator figureNumbers("Figure ", 1);
+    //    LabelGenerator figureNumbers("Figure ", 1);
 //    LabelGenerator pointNumbers("P", 0);
 //    cout << "Figure numbers: ";
 //    for (int i = 0; i < 3; i++) {
@@ -62,11 +71,12 @@ int main() {
 //    }
 //    cout << endl;
 
-//_____________________________________________________
-    FileLabelGenerator figureLabels ("Figure ", 1, "labels.txt");
+    FileLabelGenerator figureLabels("Figure ", 1, "test1.txt");
     cout << "Figure labels: \n";
     for (int i = 0; i < 3; i++) {
         cout << figureLabels.nextLabel() << endl;
+
+
     }
-    return 0;
+
 }
